@@ -7,10 +7,12 @@ const { dependencies } = require('../package.json')
 const webpack = require('webpack')
 
 const BabiliWebpackPlugin = require('babili-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 let mainConfig = {
   entry: {
-    main: path.join(__dirname, '../src/main/index.js')
+    main: path.join(__dirname, '../src/main/index.js'),
+    datastore: path.join(__dirname, '../src/main/background/datastore.js')
   },
   externals: [
     ...Object.keys(dependencies || {})
@@ -49,7 +51,16 @@ let mainConfig = {
     path: path.join(__dirname, '../dist/electron')
   },
   plugins: [
-    new webpack.NoEmitOnErrorsPlugin()
+    new webpack.NoEmitOnErrorsPlugin(),
+    new HtmlWebpackPlugin({
+      filename: 'datastore.html',
+      template: './src/main/background/datastore.html',
+      appModules: process.env.NODE_ENV !== 'production'
+        ? path.resolve(__dirname, '../node_modules')
+        // ? path.resolve(__dirname, '../app/node_modules')
+        : false,
+      chunks: ['datastore']
+    })
   ],
   resolve: {
     extensions: ['.js', '.json', '.node']

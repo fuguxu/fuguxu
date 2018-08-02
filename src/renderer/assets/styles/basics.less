@@ -1,0 +1,172 @@
+/* basic stylesheets */
+@import 'mixins.less';
+@import 'variables.less';
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  // background-color: #ffffff !important;
+  font-family: "PingFang SC", "PingFangSC-Regular", "Microsoft Yahei";
+
+  &.is-windows {
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: #C1C1C1;
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: #7D7D7D;
+    }
+
+    ::-webkit-scrollbar-track,
+    ::-webkit-scrollbar-corner {
+      background-color: transparent;
+    }
+  }
+}
+
+// .scroller::-webkit-scrollbar-thumb {
+//   background-color: transparent;
+// }
+
+// .scroller-container:hover .scroller::-webkit-scrollbar-thumb {
+//   background-color: #C1C1C1;
+// }
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 44px;
+  width: 100%;
+  .app-draggable;
+}
+.has-header {
+  position: relative;
+  top: 44px !important;
+}
+/**
+* vue-router transition
+*/
+.router-view {
+  width: 100%;
+  animation-duration: 0.5s;
+  animation-fill-mode: both;
+  backface-visibility: hidden;
+}
+.vux-pop-out-enter-active,
+.vux-pop-out-leave-active,
+.vux-pop-in-enter-active,
+.vux-pop-in-leave-active {
+  will-change: transform;
+  height: 100%;
+  position: absolute;
+  left: 0;
+}
+.vux-pop-out-enter-active {
+  animation-name: popInLeft;
+}
+.vux-pop-out-leave-active {
+  animation-name: popOutRight;
+}
+.vux-pop-in-enter-active {
+  perspective: 1000;
+  animation-name: popInRight;
+}
+.vux-pop-in-leave-active {
+  animation-name: popOutLeft;
+}
+
+.box-border {
+  position: relative;
+
+  &:after {
+    content: " ";
+    width: 200%;
+    height: 200%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    -webkit-transform: scale(0.5);
+    transform: scale(0.5);
+    -webkit-transform-origin: 0 0;
+    transform-origin: 0 0;
+    box-sizing: border-box;
+    border-radius: 5px;
+  }
+}
+@keyframes popInLeft {
+  from {
+    opacity: 0;
+    transform: translate3d(-100%, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes popOutLeft {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(-100%, 0, 0);
+  }
+}
+@keyframes popInRight {
+  from {
+    opacity: 0;
+    transform: translate3d(100%, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes popOutRight {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(100%, 0, 0);
+  }
+}
+
+.js_emoji {
+  vertical-align: text-bottom;
+}
+
+.txt_emoji {
+  display: inline-block;
+  font-size: 18px;
+}
+
+.confirm-dialog {
+  background: #F3F4F5 !important;
+  border: 0 solid #CCD0D7;
+  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.20);
+  border-radius: 1px;
+}
+.confirm-dialog-button {
+  width: 80px;
+  height: 26px;
+  padding: 0 !important;
+  line-height: 26px !important;
+  border: 0 !important;
+  font-size: 12px !important;
+  color: #666666 !important;
+  background: #FFFFFF !important;
+  border-radius: 40px !important;
+}
+.el-message-box__wrapper + .v-modal {
+  background: transparent;
+}

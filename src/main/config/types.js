@@ -1,0 +1,6 @@
+export const GOTO_HOME = 'Main/GOTO_HOME'
+export const LOGOUT = 'Main/LOGOUT'
+export const SEND_MESSAGE_TO_HOME = 'Main/SEND_MESSAGE_TO_HOME'
+export const SEND_MESSAGE_TO_WIN = 'Main/SEND_MESSAGE_TO_WIN'
+export const OPEN_WINDOW = 'Main/OPEN_WINDOW'
+export const CLOSE_ALL_WINDOW = 'Main/CLOSE_ALL_WINDOW'

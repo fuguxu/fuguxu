@@ -1,0 +1,175 @@
+/* only for mixins */
+.app-draggable {
+  -webkit-app-region: drag;
+}
+
+.app-touchable {
+  -webkit-app-region: no-drag;
+}
+// 禁止文字选中
+.no-select {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+// 文本单行显示
+.in-line {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.break_line {
+  white-space: initial !important;
+  word-break: break-all;
+}
+
+// 上边框分隔线 - Border Top Divider
+.btd {
+  &:before {
+    content: " ";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    border-top: 1px solid @border-color;
+    -webkit-transform-origin: 0 0;
+    transform-origin: 0 0;
+    -webkit-transform: scaleY(0.5);
+    transform: scaleY(0.5);
+    z-index: 999;
+  }
+}
+
+// 右边框分隔线 - Border Right Divider
+.brd {
+  &::before {
+    content: " ";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 1px;
+    border-right: 1px solid @border-color;
+    color: @border-color;
+    -webkit-transform-origin: 100% 0;
+    transform-origin: 100% 0;
+    -webkit-transform: scaleX(0.5);
+    transform: scaleX(0.5);
+  }
+}
+
+// 下边框分隔线 - Border Bottom Divider
+.bbd {
+  &::after {
+    content: " ";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    border-bottom: 1px solid @border-color;
+    color: @border-color;
+    -webkit-transform-origin: 0 100%;
+    transform-origin: 0 100%;
+    -webkit-transform: scaleY(0.5);
+    transform: scaleY(0.5);
+  }
+}
+
+// 左边框分隔线 - Border Left Divider
+.bld {
+  &:before {
+    content: " ";
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 1px;
+    border-left: 1px solid @border-color;
+    color: @border-color;
+    -webkit-transform-origin: 0 100%;
+    transform-origin: 0 100%;
+    -webkit-transform: scaleX(0.5);
+    transform: scaleX(0.5);
+  }
+}
+
+// 网格布局：行
+.row {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+}
+
+// 网格布局：列
+.col {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  -moz-box-flex: 1;
+  -moz-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  display: block;
+  width: 100%;
+}
+
+// 垂直盒子
+.ver-center {
+  display: -webkit-box;
+  display: -moz-box;
+  -webkit-box-orient: horizontal;
+  -moz-box-orient: horizontal;
+  -webkit-box-align: center;
+  -moz-box-align: center;
+}
+
+#font {
+  #small-font-size(@selector, @font-size) {
+    body.small-font-size {
+      .@{selector} {
+        font-size: @font-size - 2px !important;
+      }
+    }
+  }
+
+  #medium-font-size(@selector, @font-size) {
+    body.medium-font-size {
+      .@{selector} {
+        font-size: @font-size !important;
+      }
+    }
+  }
+
+  #large-font-size(@selector, @font-size) {
+    body.large-font-size {
+      .@{selector} {
+        font-size: @font-size + 4px !important;
+      }
+    }
+  }
+
+  #font-size(@selector, @font-size) {
+    #font > #small-font-size(@selector, @font-size);
+    #font > #medium-font-size(@selector, @font-size);
+    #font > #large-font-size(@selector, @font-size);
+  }
+}
+
+.adjustable-font-size(@selectors; @font-size) {
+  // 选择器个数
+  @n: length(@selectors);
+  // 遍历每个选择器，添加样式
+  .loop(@n) when (@n > 0) {
+    .loop((@n - 1));
+    @selector: extract(@selectors, @n);
+    #font > #font-size(@selector, @font-size);
+  }
+  .loop(@n);
+}

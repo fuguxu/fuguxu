@@ -9,6 +9,7 @@ const BabiliWebpackPlugin = require('babili-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+var LessInjectorLoader = path.resolve(__dirname, '../src/packages/loaders/less-injector-loader/index.js')
 
 let webConfig = {
   devtool: '#cheap-module-eval-source-map',
@@ -53,7 +54,8 @@ let webConfig = {
             extractCSS: true,
             loaders: {
               sass: 'vue-style-loader!css-loader!sass-loader?indentedSyntax=1',
-              scss: 'vue-style-loader!css-loader!sass-loader'
+              scss: 'vue-style-loader!css-loader!sass-loader',
+              less: 'vue-style-loader!css-loader!less-loader!' + LessInjectorLoader
             }
           }
         }

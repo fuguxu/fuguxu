@@ -10,6 +10,7 @@ const BabiliWebpackPlugin = require('babili-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const LessInjectorLoader = path.resolve(__dirname, '../src/packages/loaders/less-injector-loader/index.js')
 
 /**
  * List of node_modules to include in webpack bundle
@@ -23,7 +24,8 @@ let whiteListedModules = ['vue']
 let rendererConfig = {
   devtool: '#cheap-module-eval-source-map',
   entry: {
-    renderer: path.join(__dirname, '../src/renderer/main.js')
+    renderer: path.join(__dirname, '../src/renderer/main.js'),
+    datastore: path.join(__dirname, '../src/main/background/datastore.js')
   },
   externals: [
     ...Object.keys(dependencies || {}).filter(d => !whiteListedModules.includes(d))
@@ -69,7 +71,8 @@ let rendererConfig = {
             extractCSS: process.env.NODE_ENV === 'production',
             loaders: {
               sass: 'vue-style-loader!css-loader!sass-loader?indentedSyntax=1',
-              scss: 'vue-style-loader!css-loader!sass-loader'
+              scss: 'vue-style-loader!css-loader!sass-loader',
+              less: 'vue-style-loader!css-loader!less-loader!' + LessInjectorLoader
             }
           }
         }
@@ -120,7 +123,17 @@ let rendererConfig = {
       },
       nodeModules: process.env.NODE_ENV !== 'production'
         ? path.resolve(__dirname, '../node_modules')
-        : false
+        : false,
+      chunks: ['renderer']
+    }),
+    new HtmlWebpackPlugin({
+      filename: 'datastore.html',
+      template: './src/main/background/datastore.html',
+      appModules: process.env.NODE_ENV !== 'production'
+        ? path.resolve(__dirname, '../node_modules')
+        // ? path.resolve(__dirname, '../app/node_modules')
+        : false,
+      chunks: ['datastore']
     }),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoEmitOnErrorsPlugin()
