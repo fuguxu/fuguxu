@@ -2,6 +2,9 @@
 
 import { app } from 'electron'
 import ElectronWindow from './lib/window'
+import MainNotifier from './notifier/mainNotifier'
+
+console.log(MainNotifier)
 
 const win = ElectronWindow.getInstance()
 

@@ -18,10 +18,12 @@ module.exports = function (source) {
     ref = path.normalize(path.relative(basePath, path.join(projectRoot, srcDir, baseDir)))
     sharedVarRef = path.normalize(path.join(ref, baseDir, 'assets', 'styles', 'variables.less')).replace(/\\/g, '/')
     sharedMixinRef = path.normalize(path.join(ref, baseDir, 'assets', 'styles', 'mixins.less')).replace(/\\/g, '/')
+    sharedBasicsRef = path.normalize(path.join(ref, baseDir, 'assets', 'styles', 'basics.less')).replace(/\\/g, '/')
 
     str = ''
     str += '@import \'' + sharedVarRef + '\';' + '\n'
     str += '@import \'' + sharedMixinRef + '\';' + '\n'
+    str += '@import \'' + sharedBasicsRef + '\';' + '\n'
 
     // console.log(str)
 

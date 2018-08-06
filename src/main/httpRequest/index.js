@@ -1,14 +1,12 @@
 import request from 'request'
-import server from './server'
 import Storage from '../storage'
-import fs from 'fs'
 import crypto from 'crypto'
+import * as server from './server'
 
 const HttpRequest = (sub = class { }) => class extends sub {
-
-  constructor () {
-    // super()
-    // this.serverConfig = (this.config || config).server
+  constructor (config) {
+    super(config)
+    this.serverConfig = config
     // this.typesConfig = (this.config || config).types
   }
 
@@ -17,10 +15,16 @@ const HttpRequest = (sub = class { }) => class extends sub {
    * @param option
    * @return {Promise}
    */
-  getData (option) {
+  getData (url, option) {
     return new Promise((resolve, reject) => {
       console.debug(option)
-      request(option, (error, response, body) => {
+      request({
+        uri: url,
+        rejectUnauthorized: false,
+        headers: {'Content-Type': 'application/json;charset=UTF-8'},
+        body: JSON.stringify(option),
+        method: 'POST'
+      }, (error, response, body) => {
         console.debug('Request respond -->', error, response)
         if (!error && response.statusCode === 200) {
           try {
@@ -67,9 +71,8 @@ const HttpRequest = (sub = class { }) => class extends sub {
    * @return {Promise}
    */
   fileCatalog (option) {
-    return this.getData(Object.assign(option, {
-      method: 'POST',
-      url: server.API_FILE_CATALOG,
+    const url = server.API_FILE_CATALOG
+    return this.getData(Object.assign(url, {
       token: this.token()
     })).then(result => {
       if (result.errorCode === '200') {
@@ -84,9 +87,8 @@ const HttpRequest = (sub = class { }) => class extends sub {
    * @param {[type]} option [description]
    */
   addFile (option) {
-    return this.getData(Object.assign(option, {
-      method: 'POST',
-      url: server.API_ADD_FILE,
+    const url = server.API_ADD_FILE
+    return this.getData(Object.assign(url, {
       token: this.token()
     })).then(result => {
       if (result.errorCode === '200') {
@@ -102,9 +104,8 @@ const HttpRequest = (sub = class { }) => class extends sub {
    * @return {[type]}        [description]
    */
   searchFile (option) {
-    return this.getData(Object.assign(option, {
-      method: 'POST',
-      url: server.API_SEARCH_FILE,
+    const url = server.API_SEARCH_FILE
+    return this.getData(Object.assign(url, {
       token: this.token()
     })).then(result => {
       if (result.errorCode === '200') {
@@ -119,9 +120,8 @@ const HttpRequest = (sub = class { }) => class extends sub {
    * @param  {String}  filePath
    */
   viewLink (filePath) {
-    return this.getData({
-      method: 'POST',
-      url: server.API_VIEW_LINK,
+    const url = server.API_VIEW_LINK
+    return this.getData(url, {
       token: this.token()
     }).then(result => {
       if (result.errorCode === '200') {
@@ -145,11 +145,11 @@ const HttpRequest = (sub = class { }) => class extends sub {
     return crypto.createHash('md5').update(data).digest('hex')
   }
 
-  login (userAccount = Storage.userInfo().userAccount, password) {
-    console.debug(isAutoLogin)
+  login (userAccount = Storage.userInfo().userAccount, password, isAutoLogin) {
     let aesPassword, key, iv
-    const stamp = Date.now()
-    if (password) {
+    const url = server.API_LOGIN
+    const stamp = Date.now().toString()
+    if (!isAutoLogin) {
       key = this.md5(stamp).substring(8, 8 + 16)
       iv = '0102030405060708'
       aesPassword = this.encrypt(password + 'DDvc@131', key, iv)
@@ -158,9 +158,7 @@ const HttpRequest = (sub = class { }) => class extends sub {
     }
     console.debug(aesPassword)
 
-    return this.getData({
-      method: 'POST',
-      url: server.API_LOGIN,
+    return this.getData(url, {
       userAccount,
       password: aesPassword,
       stamp,

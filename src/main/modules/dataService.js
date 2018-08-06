@@ -8,15 +8,15 @@ export default class DataService extends ElectronModule {
   }
 
   static get moduleName () {
-    return types.MODULE_NAME_MESSAGE_SERVICE
+    return types.MODULE_NAME_DATA_SERVICE
   }
 
-  getAtRead (mid) {
-    return this.getDataStore().getAtRead(mid)
+  getUserName () {
+    return this.getDataStore().getUserName()
   }
 
-  setAtRead (mid, readIds) {
-    return this.getDataStore().setAtRead(mid, readIds)
+  setUserName (username) {
+    return this.getDataStore().setUserName(username, username)
   }
 
   dbinit () {

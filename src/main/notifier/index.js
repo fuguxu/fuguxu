@@ -17,7 +17,7 @@ export default class Notifier {
      * 注册基础通道监听事件，用于监听从基础通道回调的信息，并执行注册的回调方法
      */
     ipcRenderer.on(note.BASE_CHANNEL, (event, payload) => {
-      // console.log('Notification respond', payload.name)
+      console.log('Notification respond', payload.name)
       let name = payload.moduleName || payload.name
       let notifyId = payload.notifyId
       let notification = this.notificationMap[`${name}-${notifyId}`]
@@ -26,6 +26,24 @@ export default class Notifier {
       } catch (err) {
         console.error(err)
       }
+    })
+
+    /**
+     * 注册监听总线事件EVENT_BUS_CALL，调用指定注册模块方法
+     */
+    this.registerClientEvent(note.EVENT_BUS_CALL, (event, payload) => {
+      let params = payload.params
+      let module = this.moduleMap[payload.moduleName] // 寻找指定模块
+      console.log(payload)
+
+      // 若找到指定模块，执行指定方法
+      module && module[params.implementation].apply(module, params.args).then(result => {
+        // 发送执行结果事件EVENT_BUS_RESP
+        this.send(note.EVENT_BUS_RESP, {
+          ...payload,
+          result
+        })
+      })
     })
   }
 

@@ -7,6 +7,14 @@ export const BASE_CHANNEL = 'Note/BASE_CHANNEL'
  */
 export const EVENT_BUS = 'Note/EVENT_BUS'
 /**
+ * 模块调用事件
+ */
+export const EVENT_BUS_CALL = 'Note/EVENT_BUS_CALL'
+/**
+ * 模块回复事件
+ */
+export const EVENT_BUS_RESP = 'Note/EVENT_BUS_RESP'
+/**
  * 模块注册
  */
 export const EVENT_REGISTER = 'Note/EVENT_REGISTER'

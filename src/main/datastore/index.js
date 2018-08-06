@@ -1,4 +1,4 @@
-import UserStore from './datastore/userStore'
+import UserStore from './userStore'
 export default function (config) {
   const uds = new UserStore(config)
   const background = Object.assign({},

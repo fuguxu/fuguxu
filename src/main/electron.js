@@ -1,4 +1,4 @@
-import nativeApi from './nativeApi'
+import nativeApi from './exportModuleService'
 import electron from 'vue-electron'
 
 export default {

@@ -1,7 +1,7 @@
 import * as types from '../config/types'
 import * as modules from '../config/modules'
 import Notifier from '../notifier'
-import datastore from '../datastroe'
+import datastore from '../datastore'
 
 const config = {types, modules}
 

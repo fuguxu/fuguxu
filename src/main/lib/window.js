@@ -5,8 +5,8 @@ import { BrowserWindow } from 'electron'
 const isWindows = process.platform === 'win32'
 const isDebug = process.env.NODE_ENV === 'development'
 const winOptions = {
-  height: 240,
-  width: 400,
+  height: 320,
+  width: 440,
   // // useContentSize: true,
   show: false,
   center: true,
@@ -45,11 +45,12 @@ export default class ElectronWindow {
 
   createLoginWindow (isReLogin = false) {
     const self = this
+    let logOptions = Object.assign(winOptions, {resizable: false})
     if (self.loginWindow) {
       return
     }
     let startTime = new Date().getTime()
-    self.loginWindow = new BrowserWindow(winOptions)
+    self.loginWindow = new BrowserWindow(logOptions)
 
     self.loginWindow.loadURL(self.winURL + `#/login/${isReLogin ? 1 : 0}`)
 

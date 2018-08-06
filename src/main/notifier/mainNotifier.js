@@ -7,7 +7,7 @@ import * as note from './note'
  * @description 主进程通讯模块，用于分发事件，管理注册模块
  * @class Notifier
  */
-class Notifier {
+export default class Notifier {
   constructor () {
     this.notificationMap = {}
     this.moduleMap = {}
@@ -37,6 +37,14 @@ class Notifier {
     })
 
     /**
+     * 转发调用回调事件
+     */
+    ipcMain.on(note.EVENT_BUS_RESP, (event, payload) => {
+      console.log(`Respond for call module [${payload.moduleName}] method [${payload.params.implementation}]`, payload)
+      this.sendMessageToWindow(payload.winId, note.BASE_CHANNEL, payload)
+    })
+
+    /**
      * 监听模块注册
      */
     ipcMain.on(note.EVENT_REGISTER, (event, {moduleName, winId, module}) => {
@@ -63,6 +71,7 @@ class Notifier {
    */
   sendMessageToWindow (id = 0, channel, param) {
     let win = BrowserWindow.fromId(parseInt(id))
+    console.log('try send message to window %d', id, win)
     if (win) {
       try {
         return win.webContents.send(channel, param)
@@ -98,6 +107,7 @@ class Notifier {
     if (module) {
       console.log(`Call module [${name}], window id [${module.id}], method [${payload.params.implementation}]`, payload)
       try {
+        console.log(note.EVENT_BUS_CALL)
         this.sendMessageToWindow(module.id, note.EVENT_BUS_CALL, payload)
       } catch (err) {
         console.error(err)
@@ -166,9 +176,4 @@ class Notifier {
   }
 }
 
-module.exports = {
-  registerNotification: Notifier.registerNotification,
-  registerModule: Notifier.registerModule,
-  resolveModule: Notifier.resolveModule,
-  callModule: Notifier.callModule
-}
+Notifier.getInstance()

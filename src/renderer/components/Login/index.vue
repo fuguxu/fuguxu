@@ -1,6 +1,54 @@
 <template>
-  <div id="login" :class="{'is-logon': isLogon}">
-    <div class="header" v-if="false"></div>
+  <div id="login" class="app-draggable" :class="{'is-logon': isLogon}">
+    <div class="header" v-if="platform === 'win32'"></div>
+    <img src="./assets/images/login-bg.png" class="login-bg">
+    <img src="./assets/images/login-logo.png" class="login-logo">
+    <form :class="{'has-header': true}" @submit.prevent="login()">
+      <!-- 登录 -->
+      <el-row name="login-box" class="login-region" v-if="isLogin && !isLogon">
+        <el-col>
+          <!-- 用户名 -->
+          <div class="input-content" :class="{'active-wraning': validate}">
+            <el-autocomplete
+              class="inline-input"
+              v-model="username"
+              :fetch-suggestions="querySearch"
+              placeholder="请输入MIP账号"
+              :trigger-on-focus="false"
+              @select="handleSelect"
+              autofocus
+              clearable
+            >
+              <template slot-scope="{ item }">
+                <div class="name">{{ item }}</div>
+              </template>
+              <template slot="prepend"><i class="icon-user"></i></template>
+            </el-autocomplete>
+            <div class="warn-tips">
+              <img src="./assets/images/warning.png">
+              {{warningMsg}}
+            </div>
+          </div>
+          <!-- 密码-->
+          <div class="input-content">
+            <el-input placeholder="请输入密码"
+              type="password"
+              v-model="password"
+              clearable
+              @change="isAutoLogin = false">
+              <template slot="prepend"><i class="icon-lock"></i></template>
+            </el-input>
+          </div>
+          <!-- 选项-->
+          <el-row class="login-options">
+            <el-col><el-checkbox name="rememberMe" v-model="rememberMe">记住密码</el-checkbox></el-col>
+            <el-col><el-checkbox name="autoLogin" v-model="autoLogin">自动登录</el-checkbox></el-col>
+            <a href="">忘记密码</a>
+          </el-row>
+        </el-col>
+        <el-button type="primary" class="login-submit" @click="login()">登录</el-button>
+      </el-row>
+
       <!-- 登录中 -->
       <div class="logining" v-else>
         <div class="user-avatar">
@@ -15,8 +63,7 @@
 
         <!-- 取消登录 -->
         <div class="cancel" v-if="!isLogon" @click.prevent="cancelLogin">取消登录</div>
-        <div class="tips" v-if="isLogon && step === 0">登录中</div>
-        <div class="tips" v-if="isLogon && step === 1">转移数据库</div>
+        <div class="tips" v-if="isLogon && step === 0">登录中...</div>
       </div>
     </form>
   </div>
@@ -26,27 +73,79 @@
   export default {
     data () {
       return {
-        userNameFlag: false, // 选中用户名
-        pwdFlag: false, // 选中密码
+        accountList: [],
         isLogin: true, // 是初始登录界面
         isLogon: false, // 已经登录成功
         isCancel: false,
         step: 0,
-        isAutoLogin: false
+        isAutoLogin: false,
+        rememberMe: true,
+        autoLogin: false,
+        username: '',
+        password: '',
+        warningMsg: '账号密码错误',
+        validate: false
       }
     },
-    components: {
-    },
+    components: {},
     name: 'Login',
     computed: {
+      platform: {
+        get () {
+          // return this.$nativeApi.system.platform()
+          return false
+        }
+      }
     },
     mounted () {
-      console.log('this==', this.$nativeApi.dataService)
-      // this.$nativeApi.dataService.init().then(result => {
-      //   console.debug('init success', result)
-      // })
+      // window.ds = this.$nativeApi.dataService
+      // window.hs = this.$nativeApi.httpService
+      this.openDB().then(open => {
+        console.log('数据库初始化完成')
+        this.getUserName()
+      })
     },
     methods: {
+      querySearch (queryString, cb) {
+        const accountList = this.accountList
+        const results = queryString ? accountList.filter(username => username.includes(queryString)) : accountList
+        // 调用 callback 返回建议列表的数据
+        cb(results)
+      },
+      handleSelect (item) {
+        this.username = item && item.toString()
+      },
+      login () {
+        if (this.loginValidate) {
+          console.log('login')
+          this.$nativeApi.httpService.login('Testuser001', '').then(result => {
+            console.log('result==', result)
+          })
+        }
+      },
+      loginValidate () {
+        let success = false
+        if (!this.username) {
+          this.warningMsg = '账号不能为空'
+          this.validate = true
+        } else {
+          this.validate = false
+          success = true
+        }
+        return success
+      },
+      cancelLogin () {
+        this.isCancel = true
+        this.isLogin = true
+      },
+      openDB () {
+        return this.$nativeApi.dataService.dbinit()
+      },
+      getUserName () {
+        this.$nativeApi.dataService.getUserName().then(user => {
+          this.accountList = user.map(row => row.username)
+        })
+      }
     }
   }
 </script>
@@ -54,6 +153,19 @@
 <style rel="stylesheet/less" lang="less">
   .win-actions {
     float: right;
+  }
+  .login-bg {
+    position: absolute;
+    top: -21%;
+    z-index: 0;
+    width: 100%;
+  }
+  .login-logo {
+    position: absolute;
+    top: 47px;
+    left: 50%;
+    width: 163px;
+    transform: translateX(-50%);
   }
   .icon {
     display: inline-block;
@@ -78,17 +190,13 @@
     margin: 0 auto;
     border-radius: 4px;
     box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.2);
-    background-color: #484759;
+    background-color: #ffffff;
     transition: opacity .4s;
-    // &.is-logon {
-    //   opacity: 0;
-    // }
-
     .login-region {
-      width: 320px;
-      min-width: 320px;
-      margin: 30px auto;
-      animation: popInLeft .5s linear;
+      position: absolute;
+      top: 80px;
+      z-index: 2;
+      background-color: #ffffff;
     }
     .user-avatar {
       position: relative;
@@ -96,7 +204,6 @@
       height: 90px;
       border: solid 4px #fff;
       border-radius: 50%;
-      /*background: url("../../assets/images/avatar.svg") no-repeat center;*/
       background-size: contain;
       user-select: none;
       img {
@@ -125,98 +232,105 @@
       outline: none;
     }
     .input-content {
-      width: 200px;
-      height: 40px;
+      position: relative;
+      width: 250px;
+      height: 32px;
       margin: 0 auto;
-      border-radius: 95px;
-      background-color: #363647;
-      overflow: hidden;
-      .el-input-group__prepend {
-        padding-top: 2px;
-        padding-left: 17px;
-        padding-right: 0;
-      }
-      &.selected {
-        box-shadow: 0 0 2px 1.5px hsl(208, 99%, 62%);
-
-        input[type=password] {
-          color: hsl(208, 99%, 62%) !important;
+      margin-top: 10px;
+      border-bottom: 1px solid #A2A5AD;
+      .warn-tips {
+        position: absolute;
+        bottom: -16px;
+        left: 0;
+        z-index: 5;
+        font-size: 10px;
+        color: @color-warn;
+        padding-left: 5px;
+        display: none;
+        img {
+          width: 10px;
+          margin-bottom: -1px;
         }
+      }
+      .el-input__inner {
+        width: 230px;
+        font-size: 12px;
+        padding-left: 12px;
+        outline: 0;
+        border: none;
+        color: #666666 !important;
+        -webkit-app-region: no-drag;
+      }
+      .el-input-group__prepend {
+        padding: 0;
+        background-color: #ffffff;
       }
       .el-input-group__prepend,
       .el-input-group__append,
       input {
-        height: 40px !important;
+        height: 32px !important;
         border: none;
         font-size: @small;
         color: #fff;
-        background-color: #363647;
         &[placeholder],
         &::-webkit-input-placeholder {
-          color: rgba(171,170,184,.6) !important;
+          color: rgba(171,170,184,.6);
         }
       }
-      & + .input-content {
-        margin-top: 10px;
+    }
+    .input-content.active-wraning {
+      .warn-tips {
+        display: block;
+      }
+    }
+    .login-submit {
+      width: 250px;
+      height: 38px;
+      margin: 0 auto;
+      background-color: @base-color;
+      border-color: @base-color;
+      display: block;
+      &:hover {
+        background-color: #87b1fb;
+        border-color: #87b1fb;
       }
     }
     .login-options {
-      margin-top: 25px;
-      height: 20px;
-      & :first-child {
-        text-align: left;
+      display: flex;
+      width: 250px;
+      height: 26px;
+      margin: 12px auto 8px;
+      .el-checkbox__label, a {
+        padding-left: 6px;
+        font-size: 12px;
+        font-weight: normal;
+        color: #666666;
       }
-      & :last-child {
-        text-align: right;
-      }
-      .el-checkbox__inner {
-        width: 15px;
-        height: 15px;
-        border-color: rgba(151,151,151,.5) !important;
-        border-radius: 50%;
-        background: transparent;
-      }
-      .el-checkbox__inner:after {
-        top: 2px !important;
-        left: 2px !important;
-        width: 9px !important;
-        height: 9px !important;
-        border: none !important;
-        background-color: #3da5fe !important;
-        border-radius: 50%;
-        -webkit-transform: scale(0);
-        -moz-transform: scale(0);
-        -ms-transform: scale(0);
-        -o-transform: scale(0);
-        transform: scale(0);
-      }
-      .is-checked .el-checkbox__inner:after {
-        -webkit-transform: scale(1);
-        -moz-transform: scale(1);
-        -ms-transform: scale(1);
-        -o-transform: scale(1);
-        transform: scale(1);
-      }
-      .el-checkbox__label {
-        opacity: 0.7;
-        color: #ffffff;
+      a {
+        display: block;
+        line-height: 26px;
+        white-space: nowrap;
+        text-decoration: none;
       }
     }
     .icon-user {
-      .icon;
+      .icon(12px, 14px);
+      margin-top: 4px;
+      margin-left: 4px;
+      background: url("assets/images/user.png") no-repeat center;
+      opacity: 0.6;
     }
     .icon-lock {
-      .icon;
+      .icon(12px, 14px);
+      margin-top: 4px;
+      margin-left: 4px;
+      background: url("assets/images/lock.png") no-repeat center;
+      opacity: 0.6;
     }
-    .icon-go {
-      .icon(24px, 24px);
-    }
-
     .logining {
       position: relative;
       width: 100px;
       margin: 16px auto 38px;
-      animation: popInRight .5s linear;
 
       .cancel {
         width: 88px;
@@ -285,5 +399,13 @@
         }
       }
     }
+  }
+  .el-checkbox__input.is-checked .el-checkbox__inner, .el-checkbox__input.is-indeterminate .el-checkbox__inner {
+    background-color: @base-color;
+    border-color: @base-color;
+  }
+  .el-autocomplete-suggestion li {
+    font-size: 12px;
+    line-height: 25px;
   }
 </style>

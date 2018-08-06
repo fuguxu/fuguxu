@@ -1,4 +1,4 @@
-import BaseModel from '../native/BaseModel'
+import BaseModel from '../native/baseModel'
 import * as modules from '../config/modules'
 
 export default class ElectronModule extends BaseModel {
