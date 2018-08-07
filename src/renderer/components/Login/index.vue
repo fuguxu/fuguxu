@@ -15,6 +15,7 @@
               :fetch-suggestions="querySearch"
               placeholder="请输入MIP账号"
               :trigger-on-focus="false"
+              @input="changeInput"
               @select="handleSelect"
               autofocus
               clearable
@@ -34,8 +35,7 @@
             <el-input placeholder="请输入密码"
               type="password"
               v-model="password"
-              clearable
-              @change="isAutoLogin = false">
+              clearable>
               <template slot="prepend"><i class="icon-lock"></i></template>
             </el-input>
           </div>
@@ -78,7 +78,6 @@
         isLogon: false, // 已经登录成功
         isCancel: false,
         step: 0,
-        isAutoLogin: false,
         rememberMe: true,
         autoLogin: false,
         username: '',
@@ -98,14 +97,33 @@
       }
     },
     mounted () {
-      // window.ds = this.$nativeApi.dataService
-      // window.hs = this.$nativeApi.httpService
+      window.ds = this.$nativeApi.dataService
+      window.hs = this.$nativeApi.httpService
+      // 路由判断是否重新登录
       this.openDB().then(open => {
         console.log('数据库初始化完成')
+        this.getLoginUser()
         this.getUserName()
+        // this.getUserRegs()
       })
+      this.initAutoLogin()
+      this.initRememberMe()
     },
     methods: {
+      initAutoLogin () {
+        const autologin = this.$storage.getItem('autoLogin')
+        autologin && (this.autoLogin = autologin)
+      },
+      initRememberMe () {
+        const rembme = this.$storage.getItem('rememberMe')
+        rembme && (this.rememberMe = rembme)
+      },
+      setAutoLogin () {
+        this.$storage.setItem('autoLogin', this.autoLogin)
+      },
+      setRememberMe () {
+        this.$storage.setItem('rememberMe', this.rememberMe)
+      },
       querySearch (queryString, cb) {
         const accountList = this.accountList
         const results = queryString ? accountList.filter(username => username.includes(queryString)) : accountList
@@ -116,12 +134,26 @@
         this.username = item && item.toString()
       },
       login () {
-        if (this.loginValidate) {
+        console.log('autoLogin==', this.autoLogin)
+        console.log('rememberMe==', this.rememberMe)
+        if (this.loginValidate()) {
           console.log('login')
-          this.$nativeApi.httpService.login('Testuser001', '').then(result => {
+          this.$nativeApi.httpService.login('Testuser100', '').then(result => {
             console.log('result==', result)
+            // this.setAutoLogin()
+            // this.setRememberMe()
+            if (result.errorCode === '200') {
+              this.setUserData(result)
+              this.setLoginUser(result.result.userAccount)
+            }
           })
+        } else {
+          
         }
+      },
+      changeInput () {
+        console.log('change')
+        this.validate && (this.validate = false)
       },
       loginValidate () {
         let success = false
@@ -144,6 +176,46 @@
       getUserName () {
         this.$nativeApi.dataService.getUserName().then(user => {
           this.accountList = user.map(row => row.username)
+        })
+      },
+      getUserRegs (username) {
+        let autologin, rebme
+        this.$nativeApi.dataService.getUserRegs(username).then(data => {
+          console.log('get user regs success', data)
+          if (!data) return
+          autologin = Boolean(parseInt(data.autologin))
+          rebme = Boolean(parseInt(data.rebme))
+          this.autoLogin = autologin
+          this.rememberMe = rebme
+          if (rebme) {
+            this.username = data.username
+            this.password = this.$nativeApi.httpService.getPassword(data.value, data.key)
+          }
+        })
+      },
+      setLoginUser (username) {
+        this.$nativeApi.dataService.setLoginUser(username).then(data => {
+          console.log('get user setLoginUser success', data)
+        })
+      },
+      getLoginUser () {
+        this.$nativeApi.dataService.getLoginUser().then(data => {
+          console.log('get user getLoginUser success', data)
+          if (data && data.username) {
+            this.getUserRegs(data.username)
+          }
+        })
+      },
+      setUserData (result) {
+        const data = {
+          username: result.result.userAccount,
+          value: result.aesPassword,
+          key: result.stamp,
+          autologin: Number(this.autoLogin),
+          rebme: Number(this.rememberMe)
+        }
+        this.$nativeApi.dataService.setUser(data).then(res => {
+          console.log('set User store success', res)
         })
       }
     }
@@ -279,6 +351,7 @@
       }
     }
     .input-content.active-wraning {
+      border-bottom: 1px solid @color-warn;
       .warn-tips {
         display: block;
       }

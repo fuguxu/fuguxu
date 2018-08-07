@@ -164,6 +164,18 @@ export default class ElectronWindow {
       }
     }
   }
+  
+  focus () {
+    if (this.mainWindow) {
+      this.mainWindow.show()
+      this.mainWindow.focus()
+    } else if (this.loginWindow) {
+      this.loginWindow.show()
+      this.loginWindow.focus()
+    } else {
+      this.createLoginWindow()
+    }
+  }
 
   activateWindow () {
     if (this.mainWindow) {

@@ -141,12 +141,39 @@ const HttpRequest = (sub = class { }) => class extends sub {
     return crypted
   }
 
+  decrypt (text, key, iv) {
+    let decipher = crypto.createDecipheriv('aes-128-cbc', key, iv)
+    let dec = decipher.update(text, 'hex', 'utf8')
+    dec += decipher.final('utf8')
+    return dec
+  }
+
   md5 (data) {
     return crypto.createHash('md5').update(data).digest('hex')
   }
 
-  login (userAccount = Storage.userInfo().userAccount, password, isAutoLogin) {
-    let aesPassword, key, iv
+  encryptStamp (stamp) {
+    const key = '0102030405060708'
+    const iv = '1122334455667788'
+    return this.encrypt(stamp, key, iv)
+  }
+
+  decryptStamp (hexKey) {
+    const key = '0102030405060708'
+    const iv = '1122334455667788'
+    return this.decrypt(hexKey, key, iv)
+  }
+
+  getPassword (pwhex, stamphex) {
+    const stamp = this.decryptStamp(stamphex)
+    const key = this.md5(stamp).substring(8, 8 + 16)
+    const iv = '0102030405060708'
+    const password = this.decrypt(pwhex, key, iv)
+    return password.slice(0, -8)
+  }
+
+  login (userAccount = Storage.getItem('userInfo').userAccount, password, isAutoLogin) {
+    let aesPassword, key, iv, data
     const url = server.API_LOGIN
     const stamp = Date.now().toString()
     if (!isAutoLogin) {
@@ -164,21 +191,25 @@ const HttpRequest = (sub = class { }) => class extends sub {
       stamp,
       language: 'Zh_CN'
     }).then(result => {
-      if (result.errorCode === '0') {
-        Storage.userInfo(result.result.userInfo)
-        Storage.aesPassword(aesPassword)
-        Storage.token(result.result.token)
+      if (result.errorCode === '200') {
+        data = result.result
+        if (data) {
+          Storage.setItem('userInfo', data)
+          Storage.setItem('token', data.token)
+        }
+        result.aesPassword = aesPassword
+        result.stamp = this.encryptStamp(stamp)
       } 
       return result
     })
   }
 
-  get token () {
-    return Storage.token()
+  getItem (key) {
+    return Storage.getItem(key)
   }
 
-  get aesPassword () {
-    return Storage.aesPassword()
+  setItem (key, value) {
+    return Storage.setItem(key, value)
   }
 }
 

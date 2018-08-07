@@ -2,11 +2,13 @@
 
 import { app } from 'electron'
 import ElectronWindow from './lib/window'
-import MainNotifier from './notifier/mainNotifier'
+import Client from './lib/client'
+// import MainNotifier from './notifier/mainNotifier'
 
-console.log(MainNotifier)
+// console.log(MainNotifier)
 
 const win = ElectronWindow.getInstance()
+const client = Client.getInstance()
 
 const isSecondInstance = app.makeSingleInstance((cli, workDir) => {
   ElectronWindow.getInstance().focus()
@@ -23,6 +25,7 @@ if (process.env.NODE_ENV !== 'development') {
 }
 
 function createWindow () {
+  client.initMenu()
   win.initWindow()
 }
 

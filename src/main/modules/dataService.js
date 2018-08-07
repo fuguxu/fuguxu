@@ -11,12 +11,24 @@ export default class DataService extends ElectronModule {
     return types.MODULE_NAME_DATA_SERVICE
   }
 
+  setLoginUser (username) {
+    return this.getDataStore().setLoginUser(username)
+  }
+
+  getLoginUser () {
+    return this.getDataStore().getLoginUser()
+  }
+
+  getUserRegs (username) {
+    return this.getDataStore().getUserRegs(username)
+  }
+
   getUserName () {
     return this.getDataStore().getUserName()
   }
 
-  setUserName (username) {
-    return this.getDataStore().setUserName(username, username)
+  setUser (data) {
+    return this.getDataStore().setUser(data)
   }
 
   dbinit () {

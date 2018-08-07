@@ -6,7 +6,8 @@ const USER_DIR = process.env.NODE_ENV === 'development' ? 'TEST_MideaYunPan' : '
 const CREATE_TABLE = 'CREATE TABLE IF NOT EXISTS '
 const DB_NAME = 'user.db'
 const TABLES = {
-  USER_LIST: 'userlist'
+  LOGIN_INFO: 'logininfo',
+  USER_INFO: 'userinfo'
 }
 export default class UserStore extends BaseStore {
   async init () {
@@ -20,7 +21,8 @@ export default class UserStore extends BaseStore {
 
   initTable () {
     let sql =
-      `${CREATE_TABLE} ${TABLES.USER_LIST} (id TEXT PRIMARY KEY, username TEXT);`
+      `${CREATE_TABLE} ${TABLES.LOGIN_INFO} (id TEXT PRIMARY KEY, username TEXT);
+      ${CREATE_TABLE} ${TABLES.USER_INFO} (username TEXT PRIMARY KEY, value TEXT, key TEXT, autologin TEXT, rebme TEXT);`
   
     const statements = sql.split(';').filter(s => s).map(s => this.prepare(s))
     return Promise.all(statements.map(statement => {
@@ -30,14 +32,29 @@ export default class UserStore extends BaseStore {
     }))
   }
 
+  setLoginUser (username) {
+    let sql = `INSERT OR REPLACE INTO ${TABLES.LOGIN_INFO} (id, username) VALUES('username',?)`
+    return Promise.resolve(this.prepare(sql).run(username))
+  }
+
+  getLoginUser () {
+    let sql = `select * from ${TABLES.LOGIN_INFO} WHERE id = 'username'`
+    return Promise.resolve(this.prepare(sql).get())
+  }
+
   getUserName () {
-    let sql = `select username from ${TABLES.USER_LIST} GROUP BY username`
+    let sql = `select username from ${TABLES.USER_INFO} GROUP BY username`
     return Promise.resolve(this.prepare(sql).all())
   }
 
-  setUserName (id, username) {
-    let sql = `INSERT OR REPLACE INTO ${TABLES.USER_LIST} (id, username) VALUES(?,?)`
-    return Promise.resolve(this.prepare(sql).run(id, username))
+  setUser (data) {
+    let sql = `INSERT OR REPLACE INTO ${TABLES.USER_INFO} VALUES(@username, @value, @key, @autologin, @rebme)`
+    return Promise.resolve(this.prepare(sql).run(data))
+  }
+
+  getUserRegs (username) {
+    let sql = `select * from ${TABLES.USER_INFO} WHERE username = ?`
+    return Promise.resolve(this.prepare(sql).get(username))
   }
 }
 UserStore.DB_NAME = DB_NAME
