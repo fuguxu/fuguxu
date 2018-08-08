@@ -1,11 +1,11 @@
 <template>
-  <div id="login" class="app-draggable" :class="{'is-logon': isLogon}">
+  <div id="login" class="app-draggable">
     <div class="header" v-if="platform === 'win32'"></div>
     <img src="./assets/images/login-bg.png" class="login-bg">
     <img src="./assets/images/login-logo.png" class="login-logo">
-    <form :class="{'has-header': true}" @submit.prevent="login()">
+    <form :class="{'has-header': true}" @submit.prevent="login">
       <!-- 登录 -->
-      <el-row name="login-box" class="login-region" v-if="isLogin && !isLogon">
+      <el-row name="login-box" class="login-region">
         <el-col>
           <!-- 用户名 -->
           <div class="input-content" :class="{'active-wraning': validate}">
@@ -43,28 +43,18 @@
           <el-row class="login-options">
             <el-col><el-checkbox name="rememberMe" v-model="rememberMe">记住密码</el-checkbox></el-col>
             <el-col><el-checkbox name="autoLogin" v-model="autoLogin">自动登录</el-checkbox></el-col>
-            <a href="">忘记密码</a>
+            <a @click="open('http://netdisk.midea.com/web/index.html#profile/0.36066327114997')">忘记密码</a>
           </el-row>
         </el-col>
-        <el-button type="primary" class="login-submit" @click="login()">登录</el-button>
-      </el-row>
-
-      <!-- 登录中 -->
-      <div class="logining" v-else>
-        <div class="user-avatar">
-          <a class="user-status"></a>
-
-          <!-- loading -->
-          <svg class="spinner"  width="210px" height="210px" viewBox="0 0 210 210">
-            <circle class="path" fill="none" stroke-width="4"
+        <el-button type="primary" class="login-submit" @click.prevent="login" v-if="isLogin">登录</el-button>
+        <el-button class="logining login-submit" @click.prevent="cancelLogin" v-else>
+          <svg class="spinner"  width="30px" height="30px" viewBox="0 0 210 210">
+            <circle class="path" fill="none" stroke-width="16"
                     stroke-linecap="round" cx="105" cy="105" r="105"></circle>
           </svg>
-        </div>
-
-        <!-- 取消登录 -->
-        <div class="cancel" v-if="!isLogon" @click.prevent="cancelLogin">取消登录</div>
-        <div class="tips" v-if="isLogon && step === 0">登录中...</div>
-      </div>
+          取消登录
+        </el-button>
+      </el-row>
     </form>
   </div>
 </template>
@@ -77,12 +67,11 @@
         isLogin: true, // 是初始登录界面
         isLogon: false, // 已经登录成功
         isCancel: false,
-        step: 0,
         rememberMe: true,
         autoLogin: false,
         username: '',
         password: '',
-        warningMsg: '账号密码错误',
+        warningMsg: '账号不能为空',
         validate: false
       }
     },
@@ -91,39 +80,24 @@
     computed: {
       platform: {
         get () {
-          // return this.$nativeApi.system.platform()
-          return false
+          return this.$nativeApi.system.platform()
         }
       }
     },
     mounted () {
-      window.ds = this.$nativeApi.dataService
-      window.hs = this.$nativeApi.httpService
+      // window.ds = this.$nativeApi.dataService
+      // window.hs = this.$nativeApi.httpService
       // 路由判断是否重新登录
       this.openDB().then(open => {
         console.log('数据库初始化完成')
         this.getLoginUser()
         this.getUserName()
-        // this.getUserRegs()
       })
-      this.initAutoLogin()
-      this.initRememberMe()
+      this.isLogin = true
+      this.isCancel = false
+      this.isLogon = false
     },
     methods: {
-      initAutoLogin () {
-        const autologin = this.$storage.getItem('autoLogin')
-        autologin && (this.autoLogin = autologin)
-      },
-      initRememberMe () {
-        const rembme = this.$storage.getItem('rememberMe')
-        rembme && (this.rememberMe = rembme)
-      },
-      setAutoLogin () {
-        this.$storage.setItem('autoLogin', this.autoLogin)
-      },
-      setRememberMe () {
-        this.$storage.setItem('rememberMe', this.rememberMe)
-      },
       querySearch (queryString, cb) {
         const accountList = this.accountList
         const results = queryString ? accountList.filter(username => username.includes(queryString)) : accountList
@@ -133,32 +107,35 @@
       handleSelect (item) {
         this.username = item && item.toString()
       },
+      open (link) {
+        this.$electron.shell.openExternal(link)
+      },
       login () {
-        console.log('autoLogin==', this.autoLogin)
-        console.log('rememberMe==', this.rememberMe)
         if (this.loginValidate()) {
-          console.log('login')
-          this.$nativeApi.httpService.login('Testuser100', '').then(result => {
-            console.log('result==', result)
-            // this.setAutoLogin()
-            // this.setRememberMe()
-            if (result.errorCode === '200') {
+          this.isLogin = false
+          this.$nativeApi.httpService.login(this.username, this.password).then(result => {
+            // console.log('result==', result)
+            if (this.isCancel) return
+            if (result) {
+              this.isLogon = true
               this.setUserData(result)
               this.setLoginUser(result.result.userAccount)
+              this.gotoHome()
+            } else {
+              this.isLogin = true
             }
           })
-        } else {
-          
         }
       },
+      gotoHome () {
+        this.$nativeApi.login.gotoHome()
+      },
       changeInput () {
-        console.log('change')
         this.validate && (this.validate = false)
       },
       loginValidate () {
         let success = false
         if (!this.username) {
-          this.warningMsg = '账号不能为空'
           this.validate = true
         } else {
           this.validate = false
@@ -168,7 +145,7 @@
       },
       cancelLogin () {
         this.isCancel = true
-        this.isLogin = true
+        !this.isLogon && (this.isLogin = true)
       },
       openDB () {
         return this.$nativeApi.dataService.dbinit()
@@ -179,7 +156,8 @@
         })
       },
       getUserRegs (username) {
-        let autologin, rebme
+        let autologin, rebme, isRelogin
+        isRelogin = Boolean(parseInt(this.$route.params.reLogin))
         this.$nativeApi.dataService.getUserRegs(username).then(data => {
           console.log('get user regs success', data)
           if (!data) return
@@ -187,9 +165,15 @@
           rebme = Boolean(parseInt(data.rebme))
           this.autoLogin = autologin
           this.rememberMe = rebme
+          // 记住密码
           if (rebme) {
             this.username = data.username
             this.password = this.$nativeApi.httpService.getPassword(data.value, data.key)
+          }
+          // 自动登录
+          // 重新登录时不自动登录
+          if (autologin && !isRelogin) {
+            this.login()
           }
         })
       },
@@ -269,31 +253,6 @@
       top: 80px;
       z-index: 2;
       background-color: #ffffff;
-    }
-    .user-avatar {
-      position: relative;
-      width: 90px;
-      height: 90px;
-      border: solid 4px #fff;
-      border-radius: 50%;
-      background-size: contain;
-      user-select: none;
-      img {
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-      }
-      .user-status {
-        display: block;
-        position: absolute;
-        width: 18px;
-        height: 18px;
-        bottom: -11px;
-        left: 50%;
-        margin-left: -9px;
-        background: url("assets/images/status-online.svg") no-repeat center;
-        background-size: contain;
-      }
     }
     .submit-button {
       -webkit-appearance: none;
@@ -384,6 +343,7 @@
         line-height: 26px;
         white-space: nowrap;
         text-decoration: none;
+        cursor: pointer;
       }
     }
     .icon-user {
@@ -402,22 +362,8 @@
     }
     .logining {
       position: relative;
-      width: 100px;
-      margin: 16px auto 38px;
-
-      .cancel {
-        width: 88px;
-        height: 26px;
-        line-height: 26px;
-        margin: 25px auto;
-        border: 1px solid #686773;
-        border-radius: 95px;
-        color: #fff;
-        font-size: @small;
-        opacity: .7;
-        text-align: center;
-        cursor: pointer;
-      }
+      color: #ffffff;
+      text-indent: 13px;
 
       .tips {
         margin: 25px auto;
@@ -431,13 +377,13 @@
         z-index: 2;
         top: 50%;
         left: 50%;
-        margin-top: -108px;
-        margin-left: -108px;
+        margin-top: -17px;
+        margin-left: -62px;
         right: 15px;
         bottom: 15px;
         padding: 3px;
         transition: opacity .15s ease;
-        animation: rotator 2s linear infinite;
+        animation: rotator 1s linear infinite;
         animation-play-state: running;
       }
 
@@ -451,7 +397,7 @@
       }
 
       .spinner .path {
-        stroke: hsl(208, 99%, 62%);
+        stroke: #ffffff;
         stroke-dasharray: 700;
         stroke-dashoffset: 0;
         transform-origin: center;

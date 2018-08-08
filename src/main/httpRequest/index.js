@@ -2,6 +2,7 @@ import request from 'request'
 import Storage from '../storage'
 import crypto from 'crypto'
 import * as server from './server'
+import {WebServer} from './errorTypes'
 
 const HttpRequest = (sub = class { }) => class extends sub {
   constructor (config) {
@@ -172,18 +173,14 @@ const HttpRequest = (sub = class { }) => class extends sub {
     return password.slice(0, -8)
   }
 
-  login (userAccount = Storage.getItem('userInfo').userAccount, password, isAutoLogin) {
-    let aesPassword, key, iv, data
+  login (userAccount = Storage.getItem('userInfo').userAccount, password) {
+    let aesPassword, key, iv, data, errorText
     const url = server.API_LOGIN
     const stamp = Date.now().toString()
-    if (!isAutoLogin) {
-      key = this.md5(stamp).substring(8, 8 + 16)
-      iv = '0102030405060708'
-      aesPassword = this.encrypt(password + 'DDvc@131', key, iv)
-    } else {
-      aesPassword = this.aesPassword()
-    }
-    console.debug(aesPassword)
+
+    key = this.md5(stamp).substring(8, 8 + 16)
+    iv = '0102030405060708'
+    aesPassword = this.encrypt(password + 'DDvc@131', key, iv)
 
     return this.getData(url, {
       userAccount,
@@ -199,8 +196,12 @@ const HttpRequest = (sub = class { }) => class extends sub {
         }
         result.aesPassword = aesPassword
         result.stamp = this.encryptStamp(stamp)
-      } 
-      return result
+        return result
+      } else {
+        errorText = WebServer.filter(item => item.errorCode === result.errorCode)
+        errorText && errorText.length && alert(errorText[0].desc)
+        return false
+      }
     })
   }
 

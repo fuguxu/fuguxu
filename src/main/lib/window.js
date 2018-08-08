@@ -13,6 +13,7 @@ const winOptions = {
   resizable: isDebug,
   minimizable: false,
   maximizable: false,
+  fullscreenable: false,
   alwaysOnTop: !isDebug,
   frame: !isWindows,
   // transparent: false,
@@ -111,6 +112,7 @@ export default class ElectronWindow {
       minHeight: 600,
       minWidth: 800,
       show: false,
+      fullscreenable: true,
       frame: !isWindows,
       titleBarStyle: !isWindows && 'hiddenInset',
       autoHideMenuBar: true,
@@ -164,7 +166,7 @@ export default class ElectronWindow {
       }
     }
   }
-  
+
   focus () {
     if (this.mainWindow) {
       this.mainWindow.show()

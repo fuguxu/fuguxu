@@ -40,7 +40,7 @@ export default class Notifier {
      * 转发调用回调事件
      */
     ipcMain.on(note.EVENT_BUS_RESP, (event, payload) => {
-      console.log(`Respond for call module [${payload.moduleName}] method [${payload.params.implementation}]`, payload)
+      // console.log(`Respond for call module [${payload.moduleName}] method [${payload.params.implementation}]`, payload)
       this.sendMessageToWindow(payload.winId, note.BASE_CHANNEL, payload)
     })
 

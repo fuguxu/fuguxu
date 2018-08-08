@@ -2262,6 +2262,7 @@ var winOptions = {
   resizable: isDebug,
   minimizable: false,
   maximizable: false,
+  fullscreenable: false,
   alwaysOnTop: !isDebug,
   frame: !isWindows,
 
@@ -2359,6 +2360,7 @@ var ElectronWindow = function () {
         minHeight: 600,
         minWidth: 800,
         show: false,
+        fullscreenable: true,
         frame: !isWindows,
         titleBarStyle: !isWindows && 'hiddenInset',
         autoHideMenuBar: true,
@@ -5781,7 +5783,6 @@ var Notifier = function () {
     });
 
     __WEBPACK_IMPORTED_MODULE_2_electron__["ipcMain"].on(__WEBPACK_IMPORTED_MODULE_4__note__["d" /* EVENT_BUS_RESP */], function (event, payload) {
-      console.log('Respond for call module [' + payload.moduleName + '] method [' + payload.params.implementation + ']', payload);
       _this.sendMessageToWindow(payload.winId, __WEBPACK_IMPORTED_MODULE_4__note__["a" /* BASE_CHANNEL */], payload);
     });
 

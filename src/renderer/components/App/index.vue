@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mx_wrap">
     <header class="mx_head">
       <div class="mx_head_logo">
         <img class="mx_head_img" src="../../assets/img/logo/logo.png" />
@@ -7,58 +7,72 @@
       </div>
       <div class="mx_head_tab">
         <el-tabs class="mx_head_tablist" v-model="activeName" @tab-click="handleClick">
-          <el-tab-pane label="我的网盘" name="myDisk">我的网盘</el-tab-pane>
-          <el-tab-pane label="传输列表" name="transfer">传输列表</el-tab-pane>
-          <el-tab-pane label="云备份" name="backup">云备份</el-tab-pane>
+          <el-tab-pane label="我的网盘" name="myDisk"></el-tab-pane>
+          <el-tab-pane label="传输列表" name="transfer"></el-tab-pane>
+          <el-tab-pane label="云备份" name="backup"></el-tab-pane>
         </el-tabs>
       </div>
       <div class="mx_head_auxiliary">
-        <div class="mx_head_button">姓名</div>
-        <div class="mx_head_button">提醒</div>
-        <div class="mx_head_button">设置</div>
-        <el-dropdown trigger="click">
+        <div class="mx_head_auxiliary_item mx_close">
+          <img class="mx_head_auxiliary_img" src="../../assets/img/logo/close.png" />       
+        </div>
+        <div class="mx_head_auxiliary_item mx_minus">
+          <img class="mx_head_auxiliary_img" src="../../assets/img/logo/minus.png" /> 
+        </div>
+        <div class="mx_head_auxiliary_item mx_head_auxiliary_split">|</div>
+        <div class="mx_head_auxiliary_item">
+          <img class="mx_head_auxiliary_img" src="../../assets/img/logo/settings.png" /> 
+        </div>
+        <div class="mx_head_auxiliary_item">
+          <img class="mx_head_auxiliary_img" src="../../assets/img/logo/bell.png" /> 
+        </div>
+        <div class="mx_head_auxiliary_item">
+          <el-dropdown class="mx_head_dropdown" trigger="click">
           <span>
             徐宝祥<i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item>黄金糕</el-dropdown-item>
-            <el-dropdown-item>狮子头</el-dropdown-item>
-            <el-dropdown-item>螺蛳粉</el-dropdown-item>
+            <el-dropdown-item>注销</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
+        </div>
       </div>
     </header>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
 export default {
   name: 'home',
-  components: {
-
-  },
   data () {
     return {
       activeName: 'myDisk'
     }
   },
   methods: {
-    handleClick (tabName) {
-      this.activeName = tabName
-      console.log('tab')
+    handleClick (tab) {
+      this.activeName = tab.name
+      this.$router.push({
+        name: this.activeName
+      })
     }
   }
 }
 </script>
 
 <style lang="less">
+.mx_wrap {
+  height: 100%
+}
 .mx_head {
   display: flex;
+  position: relative;
+  padding: 0 20px;
   line-height: 70px;
   height: 70px;
   background: #2B3C5A;
   .mx_head_logo {
-    padding-left: 20px;
     width: 150px;
     font-size: 20px;
     color: @color-white;
@@ -71,9 +85,17 @@ export default {
     flex: 1;
   }
   .mx_head_auxiliary {
-    width: 200px;
+    width: 260px;
+    .mx_head_dropdown {
+      line-height: 20px;
+      cursor: pointer;
+    }
     .el-dropdown {
       font-size: 14px;
+      color: @color-white;
+    }
+    .mx_head_auxiliary_split {
+      opacity: .3;
       color: @color-white;
     }
   }
@@ -95,8 +117,13 @@ export default {
       background-color: @base-color;
     }
   }
-  .mx_head_button {
-    float: right
+  .mx_head_auxiliary_item {
+    float: right;
+    margin-right: 20px;
+    .mx_head_auxiliary_img {
+      width: 16px;
+      vertical-align: middle;
+    }
   }
 }
 </style>
