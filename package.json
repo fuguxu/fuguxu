@@ -1,8 +1,8 @@
 {
-  "name": "my-project",
-  "version": "0.0.0",
+  "name": "midea-net-disk",
+  "version": "1.0.0",
   "author": "PJY <pjychampion@163.com>",
-  "description": "An electron-vue project",
+  "description": "美的云网盘",
   "license": null,
   "main": "./dist/electron/main.js",
   "scripts": {
@@ -22,7 +22,7 @@
     "postinstall": "electron-builder install-app-deps && npm run lint:fix"
   },
   "build": {
-    "productName": "my-project",
+    "productName": "美的云网盘",
     "appId": "org.simulatedgreg.electron-vue",
     "directories": {
       "output": "build"
