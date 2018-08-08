@@ -1,6 +1,6 @@
 <template>
-  <div class="mx_wrap">
-    <header class="mx_head">
+  <div class="mx_wrap" :class="{isMac: platform !== 'win32'}">
+    <header class="mx_head app-draggable">
       <div class="mx_head_logo">
         <img class="mx_head_img" src="../../assets/img/logo/logo.png" />
         <span>美的网云盘</span>
@@ -13,13 +13,13 @@
         </el-tabs>
       </div>
       <div class="mx_head_auxiliary">
-        <div class="mx_head_auxiliary_item mx_close">
+        <!-- <div class="mx_head_auxiliary_item mx_close">
           <img class="mx_head_auxiliary_img" src="../../assets/img/logo/close.png" />       
         </div>
         <div class="mx_head_auxiliary_item mx_minus">
           <img class="mx_head_auxiliary_img" src="../../assets/img/logo/minus.png" /> 
-        </div>
-        <div class="mx_head_auxiliary_item mx_head_auxiliary_split">|</div>
+        </div> -->
+        <!-- <div class="mx_head_auxiliary_item mx_head_auxiliary_split">|</div> -->
         <div class="mx_head_auxiliary_item">
           <img class="mx_head_auxiliary_img" src="../../assets/img/logo/settings.png" /> 
         </div>
@@ -32,7 +32,7 @@
             徐宝祥<i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item>注销</el-dropdown-item>
+            <el-dropdown-item><div @click="logout">退出登录</div></el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
         </div>
@@ -50,12 +50,23 @@ export default {
       activeName: 'myDisk'
     }
   },
+  computed: {
+    platform: {
+      get () {
+        return this.$nativeApi.system.platform()
+      }
+    }
+  },
   methods: {
     handleClick (tab) {
       this.activeName = tab.name
       this.$router.push({
         name: this.activeName
       })
+    },
+    logout () {
+      console.log('click')
+      this.$nativeApi.login.logout()
     }
   }
 }
@@ -63,23 +74,21 @@ export default {
 
 <style lang="less">
 .mx_wrap {
-  height: 100%
+  height: 100%;
 }
 .mx_head {
   display: flex;
   position: relative;
-  padding: 0 20px;
+  padding-left: 20px;
   line-height: 70px;
   height: 70px;
   background: #2B3C5A;
   .mx_head_logo {
-    width: 150px;
-    font-size: 20px;
-    color: @color-white;
+    width: 138px;
   }
   .mx_head_img {
-    width: 30px;
-    vertical-align: middle;
+    width: 100%;
+    margin-top: 22px;
   }
   .mx_head_tab {
     flex: 1;
@@ -124,6 +133,15 @@ export default {
       width: 16px;
       vertical-align: middle;
     }
+  }
+}
+.isMac {
+  font-weight: 300;
+  .el-tabs__item {
+    font-weight: 300;
+  }
+  .el-tabs__item.is-active {
+    font-weight: 400;
   }
 }
 </style>

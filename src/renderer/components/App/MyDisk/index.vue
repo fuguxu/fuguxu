@@ -92,8 +92,8 @@ export default {
       border-top: 1px solid @border-color;
       .mx_aside_bottom_icon {
         float: right;
-        margin-top: 12px;
-        width: 16px;
+        margin-top: 14px;
+        width: 12px;
       }
       .mx_aside_storage {
         line-height: 40px;

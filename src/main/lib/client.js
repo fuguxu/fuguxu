@@ -54,8 +54,7 @@ export default class Client {
         label: '窗口',
         submenu: [
           {role: 'minimize', label: '最小化'},
-          {role: 'close', label: '关闭'},
-          {role: 'togglefullscreen'}
+          {role: 'close', label: '关闭'}
         ]
       }
     ]

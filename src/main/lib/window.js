@@ -95,8 +95,8 @@ export default class ElectronWindow {
   initWindow () {
     this.appQuit = false
     this.createBackgroundWindow(['datastore']).then(() => {
-      // this.toggleWindow(this.isLogin)
-      this.toggleWindow(true)
+      this.toggleWindow(this.isLogin)
+      // this.toggleWindow(true)
     })
   }
 
@@ -112,9 +112,10 @@ export default class ElectronWindow {
       minHeight: 600,
       minWidth: 800,
       show: false,
-      fullscreenable: true,
+      resizable: false,
+      fullscreenable: false,
       frame: !isWindows,
-      titleBarStyle: !isWindows && 'hiddenInset',
+      titleBarStyle: !isWindows && 'default',
       autoHideMenuBar: true,
       webPreferences: {scrollBounce: true}
     })

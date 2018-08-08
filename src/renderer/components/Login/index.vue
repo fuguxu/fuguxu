@@ -48,7 +48,7 @@
         </el-col>
         <el-button type="primary" class="login-submit" @click.prevent="login" v-if="isLogin">登录</el-button>
         <el-button class="logining login-submit" @click.prevent="cancelLogin" v-else>
-          <svg class="spinner"  width="30px" height="30px" viewBox="0 0 210 210">
+          <svg class="spinner"  width="28px" height="28px" viewBox="0 0 210 210">
             <circle class="path" fill="none" stroke-width="16"
                     stroke-linecap="round" cx="105" cy="105" r="105"></circle>
           </svg>
