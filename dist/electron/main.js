@@ -2341,7 +2341,7 @@ var ElectronWindow = function () {
 
       this.appQuit = false;
       this.createBackgroundWindow(['datastore']).then(function () {
-        _this2.toggleWindow(_this2.isLogin);
+        _this2.toggleWindow(true);
       });
     }
   }, {
@@ -2504,7 +2504,7 @@ var ElectronWindow = function () {
 }();
 
 /* harmony default export */ __webpack_exports__["a"] = (ElectronWindow);
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, "src/main/lib"))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, "src\\main\\lib"))
 
 /***/ }),
 /* 67 */
@@ -5731,7 +5731,7 @@ __WEBPACK_IMPORTED_MODULE_0_electron__["app"].on('activate', function () {
 __WEBPACK_IMPORTED_MODULE_0_electron__["app"].on('before-quit', function () {
   win.destroy();
 });
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, "src/main"))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, "src\\main"))
 
 /***/ }),
 /* 112 */
@@ -10531,7 +10531,7 @@ function map_obj(obj, fn){
   }, {})
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, "node_modules/7zip"))
+/* WEBPACK VAR INJECTION */}.call(exports, "node_modules\\7zip"))
 
 /***/ }),
 /* 148 */
@@ -10680,7 +10680,7 @@ var Client = function () {
 }();
 
 /* harmony default export */ __webpack_exports__["a"] = (Client);
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, "src/main/lib"))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, "src\\main\\lib"))
 
 /***/ }),
 /* 151 */

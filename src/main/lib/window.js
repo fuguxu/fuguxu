@@ -95,8 +95,8 @@ export default class ElectronWindow {
   initWindow () {
     this.appQuit = false
     this.createBackgroundWindow(['datastore']).then(() => {
-      this.toggleWindow(this.isLogin)
-      // this.toggleWindow(true)
+      // this.toggleWindow(this.isLogin)
+      this.toggleWindow(true)
     })
   }
 
