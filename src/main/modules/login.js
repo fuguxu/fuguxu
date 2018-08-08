@@ -23,34 +23,6 @@ export default class Login extends ElectronModule {
    * @return {*}
    */
   logout () {
-    return this.disconnect().then(() => {
-      return this.nativeApi.notifier.sendNotification(this.config.types.LOGOUT)
-    })
-  }
-
-  /**
-   * 请求主线程登录
-   * @param username
-   * @param password
-   * @param isAutoLogin
-   * @return {Promise|DataChannel}
-   */
-  login (username, password, isAutoLogin) {
-    return this.nativeApi.dataService.mucLogin(username, password, isAutoLogin).then(result => {
-      console.debug(result)
-      if (result.code === 0) {
-        const data = result.data
-        this.downloadUserPhoto(data.userInfo.uid)
-
-        return data
-      } else {
-        return {
-          err: {
-            msg: result.msg,
-            code: result.code
-          }
-        }
-      }
-    })
+    this.nativeApi.notifier.sendNotification(this.config.types.LOGOUT)
   }
 }

@@ -17,7 +17,7 @@
             internal configurations, using the project structure, building your application,
             and so much more.
           </p>
-          <button @click="open('https://simulatedgreg.gitbooks.io/electron-vue/content/')">Read the Docs</button><br><br>
+          <button @click="logout">退出登录</button><br><br>
         </div>
         <div class="doc">
           <div class="title alt">Other Documentation</div>
@@ -38,6 +38,9 @@
     methods: {
       open (link) {
         this.$electron.shell.openExternal(link)
+      },
+      logout () {
+        this.$nativeApi.login.logout()
       }
     }
   }
