@@ -108,6 +108,9 @@ export default {
     margin: 10px;
     background: @color-white;
   }
+  .el-menu-item-group__title {
+    padding: 0;
+  }
 }
 </style>
 

@@ -75,6 +75,13 @@ export default {
 <style lang="less">
 .mx_wrap {
   height: 100%;
+  .el-menu-item, .el-submenu__title {
+    height: 44px;
+    line-height: 44px;
+  }
+  .mx_aside_emnu {
+    margin-top: 12px;
+  }
 }
 .mx_head {
   display: flex;
