@@ -50,6 +50,20 @@ export default class Client {
         ]
       },
       {
+        label: '编辑',
+        role: 'edit',
+        submenu: [
+          {role: 'undo', label: '撤销'},
+          {role: 'redo', label: '恢复'},
+          {type: 'separator'},
+          {role: 'cut', label: '剪切'},
+          {role: 'copy', label: '复制'},
+          {role: 'paste', label: '粘贴'},
+          {role: 'delete', label: '删除'},
+          {role: 'selectall', label: '全选'}
+        ]
+      },
+      {
         role: 'window',
         label: '窗口',
         submenu: [
