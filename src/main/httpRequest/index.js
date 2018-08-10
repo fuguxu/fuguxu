@@ -8,6 +8,7 @@ const HttpRequest = (sub = class { }) => class extends sub {
   constructor (config) {
     super(config)
     this.serverConfig = config
+    this.reloginCount = 0
     // this.typesConfig = (this.config || config).types
   }
 
@@ -17,6 +18,7 @@ const HttpRequest = (sub = class { }) => class extends sub {
    * @return {Promise}
    */
   getData (url, option) {
+    console.log('getData---> ', option)
     return new Promise((resolve, reject) => {
       console.debug(option)
       request({
@@ -42,13 +44,17 @@ const HttpRequest = (sub = class { }) => class extends sub {
         }
       })
     }).then(data => {
+      console.log('data--> ', data)
       // 401 Token过期
-      if (data.errorCode === '401') {
-        return this.login().then(result => {
-          if (result.errorCode === '0') {
-            return this.getData(option)
+      if (data.errorCode === '401' && this.reloginCount < 3) {
+        const account = this.getItem('userInfo').userAccount
+        const psw = this.getPassword(this.getItem('value'), this.getItem('key'))
+        return this.login(account, psw).then(result => {
+          this.reloginCount += 1
+          if (result.errorCode === '200') {
+            return result
           }
-          return result
+          return false
         })
       }
       return data
@@ -73,13 +79,15 @@ const HttpRequest = (sub = class { }) => class extends sub {
    */
   fileCatalog (option) {
     const url = server.API_FILE_CATALOG
-    return this.getData(Object.assign(url, {
-      token: this.token()
+    return this.getData(url, Object.assign(option, {
+      token: this.getItem('token')
     })).then(result => {
       if (result.errorCode === '200') {
         return result.result
+      } else {
+        this.alertError(result.errorCode)
+        return false
       }
-      return false
     })
   }
 
@@ -89,13 +97,16 @@ const HttpRequest = (sub = class { }) => class extends sub {
    */
   addFile (option) {
     const url = server.API_ADD_FILE
-    return this.getData(Object.assign(url, {
-      token: this.token()
+    return this.getData(url, Object.assign(option, {
+      token: this.getItem('token'),
+      userAccount: this.getItem('userInfo').userAccount
     })).then(result => {
       if (result.errorCode === '200') {
         return result.result
+      } else {
+        this.alertError(result.errorCode)
+        return false
       }
-      return false
     })   
   }
 
@@ -106,13 +117,15 @@ const HttpRequest = (sub = class { }) => class extends sub {
    */
   searchFile (option) {
     const url = server.API_SEARCH_FILE
-    return this.getData(Object.assign(url, {
-      token: this.token()
+    return this.getData(url, Object.assign(option, {
+      token: this.getItem('token')
     })).then(result => {
       if (result.errorCode === '200') {
         return result.result
+      } else {
+        this.alertError(result.errorCode)
+        return false
       }
-      return false
     })   
   }
 
@@ -122,13 +135,15 @@ const HttpRequest = (sub = class { }) => class extends sub {
    */
   viewLink (filePath) {
     const url = server.API_VIEW_LINK
-    return this.getData(url, {
-      token: this.token()
-    }).then(result => {
+    return this.getData(url, Object.assign(filePath, {
+      token: this.getItem('token')
+    })).then(result => {
       if (result.errorCode === '200') {
         return result.result
+      } else {
+        this.alertError(result.errorCode)
+        return false
       }
-      return false
     })   
   }
 
@@ -173,10 +188,17 @@ const HttpRequest = (sub = class { }) => class extends sub {
     return password.slice(0, -8)
   }
 
-  login (userAccount = Storage.getItem('userInfo').userAccount, password) {
-    let aesPassword, key, iv, data, errorText
+  alertError (errorCode) {
+    let errorText
+    errorText = WebServer.filter(item => item.errorCode === errorCode)
+    errorText && errorText.length && alert(errorText[0].desc)
+  }
+
+  login (userAccount, password) {
+    let aesPassword, key, iv, data
     const url = server.API_LOGIN
     const stamp = Date.now().toString()
+    const encryptStamp = this.encryptStamp(stamp)
 
     key = this.md5(stamp).substring(8, 8 + 16)
     iv = '0102030405060708'
@@ -193,13 +215,14 @@ const HttpRequest = (sub = class { }) => class extends sub {
         if (data) {
           Storage.setItem('userInfo', data)
           Storage.setItem('token', data.token)
+          Storage.setItem('value', aesPassword)
+          Storage.setItem('key', encryptStamp)
         }
         result.aesPassword = aesPassword
-        result.stamp = this.encryptStamp(stamp)
+        result.stamp = encryptStamp
         return result
       } else {
-        errorText = WebServer.filter(item => item.errorCode === result.errorCode)
-        errorText && errorText.length && alert(errorText[0].desc)
+        this.alertError(result.errorCode)
         return false
       }
     })

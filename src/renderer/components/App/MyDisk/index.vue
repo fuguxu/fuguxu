@@ -76,7 +76,7 @@ export default {
   display: flex;
   height: 100%;
   padding-bottom: 70px;
-  background: #F3F4F8;
+  background: @main-bg;
   box-sizing: border-box;
   .mx_aside {
     position: relative;

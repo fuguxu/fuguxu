@@ -107,8 +107,8 @@ export default class ElectronWindow {
       return
     }
     self.mainWindow = new BrowserWindow({
-      height: 680,
-      width: 1024,
+      height: 740,
+      width: 1200,
       minHeight: 600,
       minWidth: 800,
       show: false,

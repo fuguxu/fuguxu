@@ -2,8 +2,7 @@
   <div class="mx_wrap" :class="{isMac: platform !== 'win32'}">
     <header class="mx_head app-draggable">
       <div class="mx_head_logo">
-        <img class="mx_head_img" src="../../assets/img/logo/logo.png" />
-        <span>美的网云盘</span>
+        <img class="mx_head_img" src="@/assets/img/logo/logo.png" />
       </div>
       <div class="mx_head_tab">
         <el-tabs class="mx_head_tablist" v-model="activeName" @tab-click="handleClick">
@@ -21,10 +20,10 @@
         </div> -->
         <!-- <div class="mx_head_auxiliary_item mx_head_auxiliary_split">|</div> -->
         <div class="mx_head_auxiliary_item">
-          <img class="mx_head_auxiliary_img" src="../../assets/img/logo/settings.png" /> 
+          <img class="mx_head_auxiliary_img" src="@/assets/img/logo/settings.png" /> 
         </div>
         <div class="mx_head_auxiliary_item">
-          <img class="mx_head_auxiliary_img" src="../../assets/img/logo/bell.png" /> 
+          <img class="mx_head_auxiliary_img" src="@/assets/img/logo/bell.png" /> 
         </div>
         <div class="mx_head_auxiliary_item">
           <el-dropdown class="mx_head_dropdown" trigger="click">

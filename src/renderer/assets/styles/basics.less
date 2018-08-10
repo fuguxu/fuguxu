@@ -8,7 +8,7 @@ body {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  // background-color: #ffffff !important;
+  background-color: #ffffff;
   font-family: "PingFang SC", "PingFangSC-Regular", "Microsoft Yahei";
 
   &.is-windows {
@@ -83,7 +83,41 @@ body {
 .vux-pop-in-leave-active {
   animation-name: popOutLeft;
 }
-
+.btn-white {
+  width: 82px;
+  height: 30px;
+  line-height: 30px;
+  border: 1px solid @base-color;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 400;
+  color: @base-color;
+  text-align: center;
+  cursor: pointer;
+  &:hover {
+    background-color: @base-color;
+    color: @color-white;
+    transition: all .2s linear;
+  }
+}
+.btn-main {
+  width: 82px;
+  height: 30px;
+  line-height: 30px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 400;
+  background-color: @base-color;
+  border: 1px solid @base-color;
+  color: @color-white;
+  text-align: center;
+  cursor: pointer;
+  &:hover {
+    background-color: #86b1ff;
+    border-color: #86b1ff;
+    transition: all .2s linear;
+  }
+}
 .box-border {
   position: relative;
 
