@@ -1,11 +1,9 @@
 <template>
-  <div id="login" class="app-draggable">
-    <div class="header" v-if="platform === 'win32'"></div>
-    <img src="./assets/images/login-bg.png" class="login-bg">
+  <div id="login" class="login-bg app-draggable">
     <img src="./assets/images/login-logo.png" class="login-logo">
     <form :class="{'has-header': true}" @submit.prevent="login">
       <!-- 登录 -->
-      <el-row name="login-box" class="login-region">
+      <el-row name="login-box" class="login-region app-touchable">
         <el-col>
           <!-- 用户名 -->
           <div class="input-content" :class="{'active-wraning': validate}">
@@ -211,10 +209,8 @@
     float: right;
   }
   .login-bg {
-    position: absolute;
-    top: -21%;
-    z-index: 0;
-    width: 100%;
+    background: url('./assets/images/login-bg.png') no-repeat 0 -70px;
+    background-size: contain;
   }
   .login-logo {
     position: absolute;
@@ -251,7 +247,9 @@
     .login-region {
       position: absolute;
       top: 80px;
+      left: 0;
       z-index: 2;
+      width: 100%;
       background-color: #ffffff;
     }
     .submit-button {
@@ -290,7 +288,6 @@
         outline: 0;
         border: none;
         color: #666666 !important;
-        -webkit-app-region: no-drag;
       }
       .el-input-group__prepend {
         padding: 0;

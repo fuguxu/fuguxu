@@ -1,17 +1,17 @@
 <template>
   <div class="mx_wrap" :class="{isMac: platform !== 'win32'}">
-    <header class="mx_head app-draggable">
+    <header class="mx_head app-draggable no-select">
       <div class="mx_head_logo">
         <img class="mx_head_img" src="@/assets/img/logo/logo.png" />
       </div>
-      <div class="mx_head_tab">
+      <div class="mx_head_tab app-touchable">
         <el-tabs class="mx_head_tablist" v-model="activeName" @tab-click="handleClick">
           <el-tab-pane label="我的网盘" name="myDisk"></el-tab-pane>
           <el-tab-pane label="传输列表" name="transfer"></el-tab-pane>
           <el-tab-pane label="云备份" name="backup"></el-tab-pane>
         </el-tabs>
       </div>
-      <div class="mx_head_auxiliary">
+      <div class="mx_head_auxiliary app-touchable">
         <!-- <div class="mx_head_auxiliary_item mx_close">
           <img class="mx_head_auxiliary_img" src="../../assets/img/logo/close.png" />       
         </div>
@@ -97,9 +97,16 @@ export default {
     margin-top: 22px;
   }
   .mx_head_tab {
-    flex: 1;
+    position: absolute;
+    top: 0;
+    left: 210px;
+    z-index: 1;
   }
   .mx_head_auxiliary {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 1;
     width: 260px;
     .mx_head_dropdown {
       line-height: 20px;
@@ -115,7 +122,6 @@ export default {
     }
   }
   .mx_head_tablist {
-    margin-left: 60px;
     .el-tabs__item {
       font-size: 16px;
       color: @color-white;
