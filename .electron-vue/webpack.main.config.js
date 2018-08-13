@@ -8,6 +8,7 @@ const webpack = require('webpack')
 
 const BabiliWebpackPlugin = require('babili-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 let mainConfig = {
   entry: {
@@ -60,7 +61,13 @@ let mainConfig = {
         // ? path.resolve(__dirname, '../app/node_modules')
         : false,
       chunks: ['datastore']
-    })
+    }),
+    new CopyWebpackPlugin([
+      {
+        from: path.join(__dirname, '../src/renderer/assets/image'),
+        to: path.join(__dirname, '../assets/image')
+      }
+    ])
   ],
   resolve: {
     extensions: ['.js', '.json', '.node']

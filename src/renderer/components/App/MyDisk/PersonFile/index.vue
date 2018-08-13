@@ -30,9 +30,13 @@
         <div class="perfile__list_2">大小</div>
         <div class="perfile__list_2">修改时间</div>
       </div>
-      <div class="perfile__list" v-for="(item, index) in fileList" :key="index">
+      <div class="perfile__list"
+        v-for="(item, index) in fileList"
+        :key="index"
+        :class="{'selected': setSelectBg(index)}"
+        @click="selectFile(index)">
         <div class="perfile__list_1">
-          <el-checkbox></el-checkbox>
+          <el-checkbox v-model="item.select"></el-checkbox>
           <div class="perfile__list_ico">
             <img :src="item.src">
           </div>
@@ -51,7 +55,8 @@ export default {
   name: 'PersonFile',
   data () {
     return {
-      fileList: []
+      fileList: [],
+      selectBgList: []
     }
   },
   computed: {
@@ -60,6 +65,15 @@ export default {
     this.getfileCatalog()
   },
   methods: {
+    selectFile (index) {
+      this.selectBgList.push(index)
+      console.log(event)
+      const select = this.fileList[index].select
+      this.fileList[index].select = !select
+    },
+    setSelectBg (index) {
+      return this.selectBgList.includes(index)
+    },
     getfileCatalog () {
       const params = {
         path: '/',
@@ -73,19 +87,21 @@ export default {
         console.log('filedata--> ', filedata)
         let listData = filedata.subinfos
         listData && listData.length && listData.map(row => {
-          row.src = this.getFileIcon(row.filename)
-          row.size = bytesToSize(row.fileSize)
+          row.src = this.getFileIcon(row.filetype, row.filename)
+          row.size = bytesToSize(row.filesize)
+          row.select = false
         })
+        console.log('listData==', listData)
         this.fileList = listData
       })
     },
     getFileIcon (filetype, filename) {
       let src, type
       if (filetype === '2') {
-        src = '@/assets/image/ico_folder.png'
+        src = 'assets/image/ico_folder.png'
       } else if (filetype === '1') {
         type = toFileName(filename)
-        src = `@/assets/image/ico_${type}.png`
+        src = `assets/image/ico_${type}.png`
       }
       return src
     },
@@ -159,9 +175,15 @@ export default {
     border-bottom: 1px solid @border-color;
   }
   .perfile__list_ico {
+    position: relative;
     width: 20px;
     img {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      z-index: 1;
       width: 100%;
+      transform: translateY(-50%);
     }
   }
   .perfile__list_filename {
@@ -174,19 +196,26 @@ export default {
     flex-direction: row;
     align-items: center;
     border-bottom: 1px solid @border-color;
+    &:hover {
+      background-color: #f5f9ff;
+    }
+  }
+  .perfile__list.selected {
+    color: @color-white;
+    background-color: @base-color;
   }
   .perfile__list_1 {
     display: flex;
     align-items: center;
     flex-direction: row;
-    width: 70%;
+    width: 60%;
     padding-left: 24px;
     .el-checkbox {
       margin-right: 16px;
     }
   }
   .perfile__list_2 {
-    width: 15%;
+    width: 20%;
   }
 }
 </style>

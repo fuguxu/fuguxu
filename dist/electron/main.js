@@ -2341,7 +2341,7 @@ var ElectronWindow = function () {
 
       this.appQuit = false;
       this.createBackgroundWindow(['datastore']).then(function () {
-        _this2.toggleWindow(true);
+        _this2.toggleWindow(_this2.isLogin);
       });
     }
   }, {
@@ -2355,14 +2355,15 @@ var ElectronWindow = function () {
         return;
       }
       self.mainWindow = new __WEBPACK_IMPORTED_MODULE_4_electron__["BrowserWindow"]({
-        height: 680,
-        width: 1024,
+        height: 740,
+        width: 1200,
         minHeight: 600,
         minWidth: 800,
         show: false,
-        fullscreenable: true,
+        resizable: false,
+        fullscreenable: false,
         frame: !isWindows,
-        titleBarStyle: !isWindows && 'hiddenInset',
+        titleBarStyle: !isWindows && 'default',
         autoHideMenuBar: true,
         webPreferences: { scrollBounce: true }
       });
@@ -2504,7 +2505,7 @@ var ElectronWindow = function () {
 }();
 
 /* harmony default export */ __webpack_exports__["a"] = (ElectronWindow);
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, "src\\main\\lib"))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, "src/main/lib"))
 
 /***/ }),
 /* 67 */
@@ -5731,7 +5732,7 @@ __WEBPACK_IMPORTED_MODULE_0_electron__["app"].on('activate', function () {
 __WEBPACK_IMPORTED_MODULE_0_electron__["app"].on('before-quit', function () {
   win.destroy();
 });
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, "src\\main"))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, "src/main"))
 
 /***/ }),
 /* 112 */
@@ -10531,7 +10532,7 @@ function map_obj(obj, fn){
   }, {})
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, "node_modules\\7zip"))
+/* WEBPACK VAR INJECTION */}.call(exports, "node_modules/7zip"))
 
 /***/ }),
 /* 148 */
@@ -10607,9 +10608,13 @@ var Client = function () {
         label: __WEBPACK_IMPORTED_MODULE_6_electron__["app"].getName() === '美的云网盘' ? '美的云网盘' : __WEBPACK_IMPORTED_MODULE_6_electron__["app"].getName(),
         submenu: [{ role: 'quit', label: '退出' }]
       }, {
+        label: '编辑',
+        role: 'edit',
+        submenu: [{ role: 'undo', label: '撤销' }, { role: 'redo', label: '恢复' }, { type: 'separator' }, { role: 'cut', label: '剪切' }, { role: 'copy', label: '复制' }, { role: 'paste', label: '粘贴' }, { role: 'delete', label: '删除' }, { role: 'selectall', label: '全选' }]
+      }, {
         role: 'window',
         label: '窗口',
-        submenu: [{ role: 'minimize', label: '最小化' }, { role: 'close', label: '关闭' }, { role: 'togglefullscreen' }]
+        submenu: [{ role: 'minimize', label: '最小化' }, { role: 'close', label: '关闭' }]
       }];
 
       if (isDebug) {
@@ -10680,7 +10685,7 @@ var Client = function () {
 }();
 
 /* harmony default export */ __webpack_exports__["a"] = (Client);
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, "src\\main\\lib"))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, "src/main/lib"))
 
 /***/ }),
 /* 151 */
