@@ -112,8 +112,6 @@ export default class ElectronWindow {
       minHeight: 600,
       minWidth: 800,
       show: false,
-      resizable: false,
-      fullscreenable: false,
       frame: !isWindows,
       titleBarStyle: !isWindows && 'default',
       autoHideMenuBar: true,

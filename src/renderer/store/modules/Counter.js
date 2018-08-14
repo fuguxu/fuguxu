@@ -1,25 +1,30 @@
 const state = {
-  main: 0
+  fileListSelect: false
 }
 
 const mutations = {
-  DECREMENT_MAIN_COUNTER (state) {
-    state.main--
-  },
-  INCREMENT_MAIN_COUNTER (state) {
-    state.main++
+  FILE_LIST_SELECT (state, value) {
+    console.log('FILE_LIST_SELECT', value)
+    state.fileListSelect = value
   }
 }
 
 const actions = {
-  someAsyncTask ({ commit }) {
+  FILE_LIST_SELECT ({ commit }, value) {
     // do something async
-    commit('INCREMENT_MAIN_COUNTER')
+    commit('FILE_LIST_SELECT', value)
+  }
+}
+
+const getters = {
+  FILE_LIST_SELECT (state) {
+    return state.fileListSelect
   }
 }
 
 export default {
   state,
   mutations,
-  actions
+  actions,
+  getters
 }

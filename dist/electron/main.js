@@ -2360,8 +2360,6 @@ var ElectronWindow = function () {
         minHeight: 600,
         minWidth: 800,
         show: false,
-        resizable: false,
-        fullscreenable: false,
         frame: !isWindows,
         titleBarStyle: !isWindows && 'default',
         autoHideMenuBar: true,
@@ -10614,7 +10612,7 @@ var Client = function () {
       }, {
         role: 'window',
         label: '窗口',
-        submenu: [{ role: 'minimize', label: '最小化' }, { role: 'close', label: '关闭' }]
+        submenu: [{ role: 'minimize', label: '最小化' }, { role: 'close', label: '关闭' }, { role: 'togglefullscreen' }]
       }];
 
       if (isDebug) {

@@ -56,6 +56,8 @@ export default {
       activeName: 'myDisk-personFile'
     }
   },
+  mounted () {
+  },
   methods: {
     routerGo (name) {
       this.$router.push({
@@ -104,6 +106,7 @@ export default {
     }
   }
   .mx_disk_wrap {
+    position: relative;
     flex: 1;
     margin: 10px;
     background: @color-white;

@@ -12,13 +12,15 @@
         </el-tabs>
       </div>
       <div class="mx_head_auxiliary app-touchable">
-        <!-- <div class="mx_head_auxiliary_item mx_close">
-          <img class="mx_head_auxiliary_img" src="../../assets/img/logo/close.png" />       
+        <div v-if="platform === 'win32'">
+          <div class="mx_head_auxiliary_item mx_close" @click="close">
+            <img class="mx_head_auxiliary_img" src="../../assets/img/logo/close.png" />       
+          </div>
+          <div class="mx_head_auxiliary_item mx_minus" @click="mini">
+            <img class="mx_head_auxiliary_img" src="../../assets/img/logo/minus.png" /> 
+          </div>
+          <div class="mx_head_auxiliary_item mx_head_auxiliary_split">|</div>
         </div>
-        <div class="mx_head_auxiliary_item mx_minus">
-          <img class="mx_head_auxiliary_img" src="../../assets/img/logo/minus.png" /> 
-        </div> -->
-        <!-- <div class="mx_head_auxiliary_item mx_head_auxiliary_split">|</div> -->
         <div class="mx_head_auxiliary_item">
           <img class="mx_head_auxiliary_img" src="@/assets/img/logo/settings.png" /> 
         </div>
@@ -66,6 +68,12 @@ export default {
     logout () {
       console.log('click')
       this.$nativeApi.login.logout()
+    },
+    mini () {
+      require('electron').remote.getCurrentWindow().minimize()
+    },
+    close () {
+      require('electron').remote.getCurrentWindow().close()
     }
   }
 }
@@ -145,6 +153,12 @@ export default {
       width: 16px;
       vertical-align: middle;
     }
+  }
+  .mx_close, .mx_minus {
+    cursor: pointer;
+    .mx_head_auxiliary_img {
+      width: 12px;
+    } 
   }
 }
 .isMac {

@@ -1,12 +1,12 @@
 <template>
-  <div>
-    <div class="perfile__menu">
+  <div ref="perfile" v-clickoutside="removeSelect">
+    <div class="perfile__menu no-select">
       <div class="perfile__menu_left">
         <div class="btn-white">上传</div>
         <div class="btn-white">下载</div>
         <div class="btn-white">分享</div>
         <div class="btn-white">删除</div>
-        <div class="btn-main" @click="addFile">新建文件夹</div>
+        <div class="btn-main" @click.stop="addFile">新建文件夹</div>
       </div>
       <div class="perfile__menu_right">
         <div class="perfile__menu_icon">
@@ -24,26 +24,28 @@
       <div class="perfile__name">个人文件</div>
       <div class="perfile__title">
         <div class="perfile__list_1">
-          <el-checkbox></el-checkbox>
+          <div class="check-box"></div>
           <div>名称</div>
         </div>
         <div class="perfile__list_2">大小</div>
         <div class="perfile__list_2">修改时间</div>
       </div>
-      <div class="perfile__list"
-        v-for="(item, index) in fileList"
-        :key="index"
-        :class="{'selected': setSelectBg(index)}"
-        @click="selectFile(index)">
-        <div class="perfile__list_1">
-          <el-checkbox v-model="item.select"></el-checkbox>
-          <div class="perfile__list_ico">
-            <img :src="item.src">
+      <div class="perfile__list_wrap" @click="removeSelect">
+        <div class="perfile__list no-select"
+          v-for="(item, index) in fileList"
+          :key="index"
+          :class="{'selected': setSelectBg(index)}"
+          @click.stop="selectFile(index)">
+          <div class="perfile__list_1">
+            <div class="check-box"></div>
+            <div class="perfile__list_ico">
+              <img :src="item.src">
+            </div>
+            <div class="perfile__list_filename">{{item.filename}}</div>
           </div>
-          <div class="perfile__list_filename">{{item.filename}}</div>
+          <div class="perfile__list_2">{{item.size}}</div>
+          <div class="perfile__list_2">{{item.modifyTime}}</div>
         </div>
-        <div class="perfile__list_2">{{item.size}}</div>
-        <div class="perfile__list_2">{{item.modifyTime}}</div>
       </div>
     </div>
   </div>
@@ -51,25 +53,53 @@
 
 <script>
 import { toFileName, bytesToSize } from '@/lib/utils'
+import clickoutside from '@/lib/clickoutside.js'
 export default {
   name: 'PersonFile',
   data () {
     return {
       fileList: [],
-      selectBgList: []
+      selectBgList: [],
+      startSelect: 0
     }
   },
   computed: {
+  },
+  directives: {
+    clickoutside
   },
   mounted () {
     this.getfileCatalog()
   },
   methods: {
+    removeSelect () {
+      this.selectBgList = []
+    },
     selectFile (index) {
-      this.selectBgList.push(index)
+      let min, max
+      let selectList = []
       console.log(event)
-      const select = this.fileList[index].select
-      this.fileList[index].select = !select
+      if (event.shiftKey) {
+        if (this.startSelect === index) {
+          this.listClick(index)
+        } else {
+          max = Math.max(this.startSelect, index)
+          min = Math.min(this.startSelect, index)
+          for (let i = min; i <= max; i++) {
+            selectList.push(i)
+          }
+          this.selectBgList = selectList
+        }
+      } else if (event.metaKey || event.ctrlKey) {
+        this.selectBgList.push(index)
+      } else {
+        this.listClick(index)
+      }
+    },
+    listClick (index) {
+      this.startSelect = index
+      this.selectBgList.splice(0, 1, index)
+      this.selectBgList.length = 1
     },
     setSelectBg (index) {
       return this.selectBgList.includes(index)
@@ -157,9 +187,31 @@ export default {
     }
   }
 }
+.perfile__list_wrap {
+  position: absolute;
+  top: 131px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  overflow: auto;
+}
 .perfile__content {
   font-size: 14px;
   color: @color-deep-blue;
+  .check-box {
+    display: inline-block;
+    position: relative;
+    border: 1px solid #dcdfe6;
+    border-radius: 2px;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 14px;
+    height: 14px;
+    background-color: #ffffff;
+    z-index: 1;
+    margin-right: 16px;
+  }
   .perfile__name {
     font-size: 12px;
     padding-left: 24px;
@@ -203,6 +255,11 @@ export default {
   .perfile__list.selected {
     color: @color-white;
     background-color: @base-color;
+    .check-box {
+      border: 1px solid #ffffff;
+      background: url('./image/checked.png') no-repeat 0 0;
+      background-size: contain;
+    }
   }
   .perfile__list_1 {
     display: flex;
